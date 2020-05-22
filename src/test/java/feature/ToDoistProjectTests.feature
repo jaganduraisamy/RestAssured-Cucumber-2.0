@@ -13,6 +13,7 @@ Feature: This feature is contains tests tpo verify Project Rest API services
     When I send post request to create new project with name as JD-Test Project 1
     Then I should have the status code "200"
     And I should see project name is JD-Test Project 1
+    And the body response should match with project-schema
 
   @Update_Project
   Scenario: User should be able to edit and update an existing project name

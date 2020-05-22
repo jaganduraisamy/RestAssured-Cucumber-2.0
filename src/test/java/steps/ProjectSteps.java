@@ -6,6 +6,7 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,8 +18,8 @@ import services.AddProject;
 import services.DeleteProject;
 import services.GetProjects;
 import services.UpdateProject;
-
-
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import org.hamcrest.Matcher.*;
 public class ProjectSteps {
     HashMap<String, String> headers = new HashMap();
     private Project project;
@@ -66,6 +67,14 @@ public class ProjectSteps {
         Assert.assertTrue(this.project.name.equals(projectName));
     }
 
+    @And("^the body response should match with project-schema$")
+    public void theBodyResponseShouldMatchWithProjectSchema() {
+        response.then().assertThat().contentType(ContentType.JSON);
+
+        response.then().assertThat().contentType(ContentType.JSON).and()
+                .body(matchesJsonSchemaInClasspath("project-schema.json"));
+    }
+
     @And("^I have an existing project with name (.*)$")
     public void iHaveAnExistingProjectWithName(String projectName) {
         List<Project> projectList = getProjectsService.GetProjectsList(projectName);
@@ -102,6 +111,5 @@ public class ProjectSteps {
         Assert.assertEquals(response.statusCode(), 404);
         response.then().assertThat().toString().equals("Not Found");
     }
-
 }
 
